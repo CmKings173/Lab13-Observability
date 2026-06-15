@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -30,14 +30,14 @@ class LogRecord(BaseModel):
     event: str
     correlation_id: str
     env: str
-    user_id_hash: str | None = None
-    session_id: str | None = None
-    feature: str | None = None
-    model: str | None = None
-    latency_ms: int | None = None
-    tokens_in: int | None = None
-    tokens_out: int | None = None
-    cost_usd: float | None = None
-    error_type: str | None = None
-    tool_name: str | None = None
-    payload: dict[str, Any] | None = None
+    user_id_hash: Optional[str] = None
+    session_id: Optional[str] = None
+    feature: Optional[str] = None
+    model: Optional[str] = None
+    latency_ms: Optional[int] = None
+    tokens_in: Optional[int] = None
+    tokens_out: Optional[int] = None
+    cost_usd: Optional[float] = None
+    error_type: Optional[str] = None
+    tool_name: Optional[str] = None
+    payload: Optional[dict[str, Any]] = None

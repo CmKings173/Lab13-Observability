@@ -4,22 +4,23 @@ import os
 from typing import Any
 
 try:
-    from langfuse.decorators import observe, langfuse_context
-except Exception:  # pragma: no cover
-    def observe(*args: Any, **kwargs: Any):
-        def decorator(func):
-            return func
-        return decorator
+    from langfuse import Langfuse as _Langfuse
 
-    class _DummyContext:
-        def update_current_trace(self, **kwargs: Any) -> None:
-            return None
+    _client = _Langfuse(
+        public_key=os.getenv("LANGFUSE_PUBLIC_KEY", ""),
+        secret_key=os.getenv("LANGFUSE_SECRET_KEY", ""),
+        host=os.getenv("LANGFUSE_HOST", os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")),
+    )
 
-        def update_current_observation(self, **kwargs: Any) -> None:
-            return None
+    def tracing_enabled() -> bool:
+        return bool(os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"))
 
-    langfuse_context = _DummyContext()
+    def get_langfuse() -> _Langfuse:
+        return _client
 
+except Exception:
+    def tracing_enabled() -> bool:  # type: ignore[misc]
+        return False
 
-def tracing_enabled() -> bool:
-    return bool(os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"))
+    def get_langfuse() -> Any:  # type: ignore[misc]
+        return None

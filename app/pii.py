@@ -5,10 +5,18 @@ import re
 
 PII_PATTERNS: dict[str, str] = {
     "email": r"[\w\.-]+@[\w\.-]+\.\w+",
-    "phone_vn": r"(?:\+84|0)[ \.-]?\d{3}[ \.-]?\d{3}[ \.-]?\d{3,4}", # Matches 090 123 4567, 090.123.4567, etc.
-    "cccd": r"\b\d{12}\b",
+    # Credit card (16 digits with optional separators) — must run before cccd/phone
     "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+    # CCCD: exactly 12 consecutive digits, no digit neighbours
+    "cccd": r"(?<!\d)\d{12}(?!\d)",
+    # VN phone: local (0xx...) or international (+84 xx...) format
+    # Covers: 0987654321, 090 123 4567, 090.123.4567, +84 987 654 321, +84-987-654-321
+    # Strategy: match prefix then 8-9 remaining digits with optional separators between each digit group
+    "phone_vn": r"(?:\+84|0)(?:[\s\.\-]?\d){8,10}(?!\d)",
+    # VN passport: one uppercase letter followed by 7 or 8 digits
+    "passport": r"\b[A-Z]\d{7,8}\b",
+    # VN address keywords
+    "address_vn": r"(?:số\s+\d+[,\s]+)?(?:đường|phố|ngõ|ngách)\s+[\w\s]+,?\s*(?:phường|xã)\s+[\w\s]+,?\s*(?:quận|huyện|thị\s+xã)\s+[\w\s]+",
 }
 
 
